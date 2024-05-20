@@ -124,6 +124,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="lib\ctypes\macholib\fetch_macholib" />
     <None Include="lib\ctypes\macholib\fetch_macholib.bat" />
@@ -155,6 +156,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="img\Cobra1.png" />
     <Content Include="lib\abc.py" />
     <Content Include="lib\aifc.py" />
     <Content Include="lib\antigravity.py" />

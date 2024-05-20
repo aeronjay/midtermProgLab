@@ -32,6 +32,7 @@ namespace midtermProgLab
             MyRichTextBox.Paint += new PaintEventHandler(MyRichTextBox_Paint);
             MyPictureBox.Paint += new PaintEventHandler(pictureBox1_Paint);
             MyRichTextBox.TextChanged += new EventHandler(MyRichTextBox_TextChanged);
+            MyRichTextBox.MouseWheel += new MouseEventHandler(MyRichTextBox_MouseWheel);
 
             MyRichTextBox.Text = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
 
@@ -60,6 +61,14 @@ namespace midtermProgLab
             debounceTimer.Stop();
             ApplySyntaxHighlighting();
         }
+        private void MyRichTextBox_MouseWheel(object sender, MouseEventArgs e)
+        {
+            if (ModifierKeys.HasFlag(Keys.Control))
+            {
+                ((HandledMouseEventArgs)e).Handled = true;
+            }
+        }
+
 
 
         private void MyRichTextBox_Resize(object sender, EventArgs e)
