@@ -218,5 +218,10 @@ namespace midtermProgLab
 
             richTextBox.ResumeLayout();
         }
+
+        private void start_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
