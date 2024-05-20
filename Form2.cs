@@ -31,5 +31,11 @@ namespace midtermProgLab
         {
 
         }
+
+        public void SetOutput(string output)
+        {
+            richTextBox1.Text = output;
+        }
     }
 }
+
