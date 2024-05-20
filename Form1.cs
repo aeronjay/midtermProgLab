@@ -233,20 +233,16 @@ namespace midtermProgLab
         {
             MyRichTextBox.SuspendLayout();
 
-            // Store the current selection position
             int originalSelectionStart = MyRichTextBox.SelectionStart;
             int originalSelectionLength = MyRichTextBox.SelectionLength;
 
-            // Get the visible range of text
             int firstVisibleCharIndex = MyRichTextBox.GetCharIndexFromPosition(new Point(0, 0));
             int firstVisibleLine = MyRichTextBox.GetLineFromCharIndex(firstVisibleCharIndex);
             int lastVisibleCharIndex = MyRichTextBox.GetCharIndexFromPosition(new Point(0, MyRichTextBox.ClientRectangle.Bottom));
             int lastVisibleLine = MyRichTextBox.GetLineFromCharIndex(lastVisibleCharIndex);
 
-            // Color only the visible portion of text
             ColorVisibleText(firstVisibleLine, lastVisibleLine);
 
-            // Restore the original selection
             MyRichTextBox.Select(originalSelectionStart, originalSelectionLength);
 
             MyRichTextBox.ResumeLayout();
@@ -308,22 +304,6 @@ namespace midtermProgLab
             }
         }
 
-        private void ColorText(RichTextBox richTextBox, string pattern, Color color)
-        {
-            int originalSelectionStart = richTextBox.SelectionStart;
-            int originalSelectionLength = richTextBox.SelectionLength;
-            Color originalColor = richTextBox.SelectionColor;
-
-            foreach (Match match in Regex.Matches(richTextBox.Text, pattern))
-            {
-                richTextBox.Select(match.Index, match.Length);
-                richTextBox.SelectionColor = color;
-            }
-
-            richTextBox.Select(originalSelectionStart, originalSelectionLength);
-            richTextBox.SelectionColor = originalColor;
-        }
-
         private void start_Click(object sender, EventArgs e)
         {
             string cobraCode = MyRichTextBox.Text;
@@ -335,17 +315,14 @@ namespace midtermProgLab
 
         private string TranslateToPython(string cobraCode)
         {
-            // Basic translation for variable declarations
             cobraCode = Regex.Replace(cobraCode, @"DECLARE\s+num\s+(\w+)\s*=\s*(.+)", "$1 = int($2)");
             cobraCode = Regex.Replace(cobraCode, @"DECLARE\s+text\s+(\w+)\s*=\s*(.+)", "$1 = str($2)");
             cobraCode = Regex.Replace(cobraCode, @"DECLARE\s+tof\s+(\w+)\s*=\s*(.+)", "$1 = bool($2)");
             cobraCode = Regex.Replace(cobraCode, @"DECLARE\s+alph\s+(\w+)\s*=\s*'(.+)'", "$1 = '$2'");
             cobraCode = Regex.Replace(cobraCode, @"DECLARE\s+numd\s+(\w+)\s*=\s*(.+)", "$1 = float($2)");
 
-            // Translation for print statements
             cobraCode = Regex.Replace(cobraCode, @"\bsay\(", "print(");
 
-            // Handling concatenation for Python (ensuring spaces around + for readability)
             cobraCode = Regex.Replace(cobraCode, @"\+(\S)", " + $1");
             cobraCode = Regex.Replace(cobraCode, @"(\S)\+", "$1 + ");
 
@@ -374,7 +351,6 @@ namespace midtermProgLab
                 return $"Error: {ex.Message}\n{error}";
             }
 
-            // Read the output
             output.Seek(0, SeekOrigin.Begin);
             using (var reader = new StreamReader(output))
             {
