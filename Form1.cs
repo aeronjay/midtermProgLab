@@ -224,25 +224,95 @@ namespace midtermProgLab
         {
             MyRichTextBox.SuspendLayout();
 
+            // Store the current selection position
             int originalSelectionStart = MyRichTextBox.SelectionStart;
             int originalSelectionLength = MyRichTextBox.SelectionLength;
 
-            ColorWords(MyRichTextBox, @"DECLARE\s+num\b", Color.Red);
-            ColorWords(MyRichTextBox, @"DECLARE\s+text\b", Color.Red);
-            ColorWords(MyRichTextBox, @"DECLARE\s+tof\b", Color.Red);
-            ColorWords(MyRichTextBox, @"DECLARE\s+alph\b", Color.Red);
-            ColorWords(MyRichTextBox, @"DECLARE\s+numd\b", Color.Red);
-            ColorWords(MyRichTextBox, @"\bnum\b", Color.Blue);
-            ColorWords(MyRichTextBox, @"\btext\b", Color.Blue);
-            ColorWords(MyRichTextBox, @"\btof\b", Color.Blue);
-            ColorWords(MyRichTextBox, @"\balph\b", Color.Blue);
-            ColorWords(MyRichTextBox, @"\bnumd\b", Color.Blue);
-            ColorWords(MyRichTextBox, @"\bsay\b", Color.Green);
+            // Get the visible range of text
+            int firstVisibleCharIndex = MyRichTextBox.GetCharIndexFromPosition(new Point(0, 0));
+            int firstVisibleLine = MyRichTextBox.GetLineFromCharIndex(firstVisibleCharIndex);
+            int lastVisibleCharIndex = MyRichTextBox.GetCharIndexFromPosition(new Point(0, MyRichTextBox.ClientRectangle.Bottom));
+            int lastVisibleLine = MyRichTextBox.GetLineFromCharIndex(lastVisibleCharIndex);
 
+            // Color only the visible portion of text
+            ColorVisibleText(firstVisibleLine, lastVisibleLine);
+
+            // Restore the original selection
             MyRichTextBox.Select(originalSelectionStart, originalSelectionLength);
-            MyRichTextBox.SelectionColor = MyRichTextBox.ForeColor;
 
             MyRichTextBox.ResumeLayout();
+        }
+        private void ColorVisibleText(int startLine, int endLine)
+        {
+            int originalSelectionStart = MyRichTextBox.SelectionStart;
+            int originalSelectionLength = MyRichTextBox.SelectionLength;
+            Color originalColor = MyRichTextBox.SelectionColor;
+
+            using (Graphics g = MyRichTextBox.CreateGraphics())
+            {
+                for (int i = startLine; i <= endLine && i < MyRichTextBox.Lines.Length; i++)
+                {
+                    int startIndex = MyRichTextBox.GetFirstCharIndexFromLine(i);
+                    int endIndex = (i < MyRichTextBox.Lines.Length - 1) ?
+                        MyRichTextBox.GetFirstCharIndexFromLine(i + 1) - 1 :
+                        MyRichTextBox.TextLength - 1;
+
+                    string lineText = MyRichTextBox.Lines[i];
+                    ColorLineText(lineText, startIndex, endIndex);
+                }
+            }
+
+            MyRichTextBox.Select(originalSelectionStart, originalSelectionLength);
+            MyRichTextBox.SelectionColor = originalColor;
+        }
+        private void ColorLineText(string lineText, int startIndex, int endIndex)
+        {
+            int originalSelectionStart = MyRichTextBox.SelectionStart;
+            int originalSelectionLength = MyRichTextBox.SelectionLength;
+            Color originalColor = MyRichTextBox.SelectionColor;
+
+            foreach (Match match in Regex.Matches(lineText, @"\b(DECLARE|num|text|tof|alph|numd|say)\b"))
+            {
+                MyRichTextBox.Select(startIndex + match.Index, match.Length);
+                MyRichTextBox.SelectionColor = GetColorForToken(match.Value);
+            }
+
+            MyRichTextBox.Select(originalSelectionStart, originalSelectionLength);
+            MyRichTextBox.SelectionColor = originalColor;
+        }
+        private Color GetColorForToken(string token)
+        {
+            switch (token)
+            {
+                case "DECLARE":
+                    return Color.Red;
+                case "num":
+                case "text":
+                case "tof":
+                case "alph":
+                case "numd":
+                    return Color.Blue;
+                case "say":
+                    return Color.Green;
+                default:
+                    return MyRichTextBox.ForeColor;
+            }
+        }
+
+        private void ColorText(RichTextBox richTextBox, string pattern, Color color)
+        {
+            int originalSelectionStart = richTextBox.SelectionStart;
+            int originalSelectionLength = richTextBox.SelectionLength;
+            Color originalColor = richTextBox.SelectionColor;
+
+            foreach (Match match in Regex.Matches(richTextBox.Text, pattern))
+            {
+                richTextBox.Select(match.Index, match.Length);
+                richTextBox.SelectionColor = color;
+            }
+
+            richTextBox.Select(originalSelectionStart, originalSelectionLength);
+            richTextBox.SelectionColor = originalColor;
         }
 
         private void start_Click(object sender, EventArgs e)
