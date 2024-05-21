@@ -268,7 +268,7 @@ namespace midtermProgLab
             }
 
             MyRichTextBox.Select(originalSelectionStart, originalSelectionLength);
-            MyRichTextBox.SelectionColor = originalColor;
+            MyRichTextBox.SelectionColor = Color.White;
         }
         private void ColorLineText(string lineText, int startIndex, int endIndex)
         {
