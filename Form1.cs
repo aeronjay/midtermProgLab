@@ -16,7 +16,7 @@ namespace midtermProgLab
         private Label fileNameLabel;
 
         private Timer debounceTimer;
-        private int debounceInterval = 300; // Adjust interval as needed
+        private int debounceInterval = 300; 
 
         public Form1()
         {
@@ -496,6 +496,49 @@ def txt(value):
             }
         }
 
+        private void searchButton_Click(object sender, EventArgs e)
+        {
+            string searchesFor = searchText.Text;
+
+            if (string.IsNullOrEmpty(searchesFor))
+            {
+                MessageBox.Show("Please enter text to search for.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            HighlightSearchResults(searchesFor);
+        }
+
+        private void HighlightSearchResults(string searchText)
+        {
+            // Reset previous highlights
+            MyRichTextBox.SelectAll();
+            MyRichTextBox.SelectionBackColor = MyRichTextBox.BackColor;
+
+            if (string.IsNullOrEmpty(searchText))
+            {
+                return;
+            }
+
+            int startIndex = 0;
+            while (startIndex < MyRichTextBox.TextLength)
+            {
+                int index = MyRichTextBox.Text.IndexOf(searchText, startIndex, StringComparison.CurrentCultureIgnoreCase);
+                if (index != -1)
+                {
+                    MyRichTextBox.Select(index, searchText.Length);
+                    MyRichTextBox.SelectionBackColor = Color.Yellow; // Highlight color
+                    startIndex = index + searchText.Length;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            MyRichTextBox.Select(MyRichTextBox.TextLength, 0);
+            MyRichTextBox.SelectionBackColor = MyRichTextBox.BackColor;
+        }
     }
 
 }
