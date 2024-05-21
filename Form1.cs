@@ -34,7 +34,7 @@ namespace midtermProgLab
             MyRichTextBox.TextChanged += new EventHandler(MyRichTextBox_TextChanged);
             MyRichTextBox.MouseWheel += new MouseEventHandler(MyRichTextBox_MouseWheel);
 
-            MyRichTextBox.Text = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
+            MyRichTextBox.Text = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
 
             ApplySyntaxHighlighting();
         }
@@ -121,7 +121,7 @@ namespace midtermProgLab
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            MyRichTextBox.Text = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
+            MyRichTextBox.Text = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
         }
 
         private void AdjustFontSize(float adjustment)
@@ -420,6 +420,82 @@ def txt(value):
 
             MessageBox.Show(output.ToString(), "Lexical Analysis", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
+
+        private void newFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MyRichTextBox.Clear();
+            currentFilePath = string.Empty;
+            fileNameLabel.Text = "New File";
+        }
+
+        private void saveFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            savefile_Click(sender, e);
+
+
+        }
+
+        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            saveAs_Click(sender, e);
+
+        }
+
+        private void openFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.Filter = "Text Files (*.txt)|*.txt|All Files (*.*)|*.*";
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    try
+                    {
+                        MyRichTextBox.Text = File.ReadAllText(openFileDialog.FileName);
+                        currentFilePath = openFileDialog.FileName;
+                        fileNameLabel.Text = Path.GetFileName(currentFilePath);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Failed to open file: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
+
+        private void undoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            undo_Click(sender, e);
+        }
+
+        private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrEmpty(MyRichTextBox.SelectedText))
+            {
+                MyRichTextBox.SelectedText = string.Empty;
+            }
+        }
+
+        private void redoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            redo_Click(sender, e);
+        }
+
+        private void pasteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Clipboard.ContainsText())
+            {
+                MyRichTextBox.Paste();
+            }
+        }
+
+        private void copyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrEmpty(MyRichTextBox.SelectedText))
+            {
+                Clipboard.SetText(MyRichTextBox.SelectedText);
+            }
+        }
+
     }
 
 }
