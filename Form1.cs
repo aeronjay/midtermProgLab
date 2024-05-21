@@ -145,14 +145,7 @@ namespace midtermProgLab
 
         private void darkMode_CheckedChanged(object sender, Bunifu.UI.WinForms.BunifuToggleSwitch.CheckedChangedEventArgs e)
         {
-            if (e.Checked)
-            {
-                // Dark mode
-            }
-            else
-            {
-                // Light mode
-            }
+            
             MyPictureBox.Invalidate();
         }
 

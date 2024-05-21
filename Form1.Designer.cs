@@ -29,13 +29,10 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            Bunifu.UI.WinForms.BunifuToggleSwitch.ToggleState toggleState1 = new Bunifu.UI.WinForms.BunifuToggleSwitch.ToggleState();
-            Bunifu.UI.WinForms.BunifuToggleSwitch.ToggleState toggleState2 = new Bunifu.UI.WinForms.BunifuToggleSwitch.ToggleState();
-            Bunifu.UI.WinForms.BunifuToggleSwitch.ToggleState toggleState3 = new Bunifu.UI.WinForms.BunifuToggleSwitch.ToggleState();
-            Bunifu.UI.WinForms.BunifuTextBox.StateProperties stateProperties1 = new Bunifu.UI.WinForms.BunifuTextBox.StateProperties();
-            Bunifu.UI.WinForms.BunifuTextBox.StateProperties stateProperties2 = new Bunifu.UI.WinForms.BunifuTextBox.StateProperties();
-            Bunifu.UI.WinForms.BunifuTextBox.StateProperties stateProperties3 = new Bunifu.UI.WinForms.BunifuTextBox.StateProperties();
-            Bunifu.UI.WinForms.BunifuTextBox.StateProperties stateProperties4 = new Bunifu.UI.WinForms.BunifuTextBox.StateProperties();
+            Bunifu.UI.WinForms.BunifuTextBox.StateProperties stateProperties9 = new Bunifu.UI.WinForms.BunifuTextBox.StateProperties();
+            Bunifu.UI.WinForms.BunifuTextBox.StateProperties stateProperties10 = new Bunifu.UI.WinForms.BunifuTextBox.StateProperties();
+            Bunifu.UI.WinForms.BunifuTextBox.StateProperties stateProperties11 = new Bunifu.UI.WinForms.BunifuTextBox.StateProperties();
+            Bunifu.UI.WinForms.BunifuTextBox.StateProperties stateProperties12 = new Bunifu.UI.WinForms.BunifuTextBox.StateProperties();
             this.panel1 = new System.Windows.Forms.Panel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.lexical = new FontAwesome.Sharp.IconButton();
@@ -45,8 +42,6 @@
             this.savefile = new FontAwesome.Sharp.IconButton();
             this.undo = new FontAwesome.Sharp.IconButton();
             this.redo = new FontAwesome.Sharp.IconButton();
-            this.iconButton4 = new FontAwesome.Sharp.IconButton();
-            this.darkMode = new Bunifu.UI.WinForms.BunifuToggleSwitch();
             this.stop = new FontAwesome.Sharp.IconButton();
             this.start = new FontAwesome.Sharp.IconButton();
             this.searchButton = new FontAwesome.Sharp.IconButton();
@@ -87,8 +82,6 @@
             this.panel1.Controls.Add(this.savefile);
             this.panel1.Controls.Add(this.undo);
             this.panel1.Controls.Add(this.redo);
-            this.panel1.Controls.Add(this.iconButton4);
-            this.panel1.Controls.Add(this.darkMode);
             this.panel1.Controls.Add(this.stop);
             this.panel1.Controls.Add(this.start);
             this.panel1.Controls.Add(this.searchButton);
@@ -119,7 +112,7 @@
             this.lexical.IconColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
             this.lexical.IconFont = FontAwesome.Sharp.IconFont.Auto;
             this.lexical.IconSize = 30;
-            this.lexical.Location = new System.Drawing.Point(464, 25);
+            this.lexical.Location = new System.Drawing.Point(507, 25);
             this.lexical.Name = "lexical";
             this.lexical.Size = new System.Drawing.Size(45, 40);
             this.lexical.TabIndex = 12;
@@ -136,7 +129,7 @@
             this.zoomOutCode.IconColor = System.Drawing.Color.Snow;
             this.zoomOutCode.IconFont = FontAwesome.Sharp.IconFont.Auto;
             this.zoomOutCode.IconSize = 30;
-            this.zoomOutCode.Location = new System.Drawing.Point(597, 27);
+            this.zoomOutCode.Location = new System.Drawing.Point(757, 25);
             this.zoomOutCode.Name = "zoomOutCode";
             this.zoomOutCode.Size = new System.Drawing.Size(45, 40);
             this.zoomOutCode.TabIndex = 11;
@@ -153,7 +146,7 @@
             this.zoomInCode.IconColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.zoomInCode.IconFont = FontAwesome.Sharp.IconFont.Auto;
             this.zoomInCode.IconSize = 30;
-            this.zoomInCode.Location = new System.Drawing.Point(546, 27);
+            this.zoomInCode.Location = new System.Drawing.Point(706, 25);
             this.zoomInCode.Name = "zoomInCode";
             this.zoomInCode.Size = new System.Drawing.Size(45, 40);
             this.zoomInCode.TabIndex = 10;
@@ -170,7 +163,7 @@
             this.saveAs.IconColor = System.Drawing.Color.DeepSkyBlue;
             this.saveAs.IconFont = FontAwesome.Sharp.IconFont.Auto;
             this.saveAs.IconSize = 30;
-            this.saveAs.Location = new System.Drawing.Point(117, 23);
+            this.saveAs.Location = new System.Drawing.Point(160, 23);
             this.saveAs.Name = "saveAs";
             this.saveAs.Size = new System.Drawing.Size(45, 40);
             this.saveAs.TabIndex = 9;
@@ -187,7 +180,7 @@
             this.savefile.IconColor = System.Drawing.Color.DeepSkyBlue;
             this.savefile.IconFont = FontAwesome.Sharp.IconFont.Auto;
             this.savefile.IconSize = 30;
-            this.savefile.Location = new System.Drawing.Point(158, 23);
+            this.savefile.Location = new System.Drawing.Point(201, 23);
             this.savefile.Name = "savefile";
             this.savefile.Size = new System.Drawing.Size(45, 40);
             this.savefile.TabIndex = 8;
@@ -204,7 +197,7 @@
             this.undo.IconColor = System.Drawing.Color.White;
             this.undo.IconFont = FontAwesome.Sharp.IconFont.Auto;
             this.undo.IconSize = 30;
-            this.undo.Location = new System.Drawing.Point(245, 23);
+            this.undo.Location = new System.Drawing.Point(288, 23);
             this.undo.Name = "undo";
             this.undo.Size = new System.Drawing.Size(45, 40);
             this.undo.TabIndex = 7;
@@ -221,71 +214,12 @@
             this.redo.IconColor = System.Drawing.Color.White;
             this.redo.IconFont = FontAwesome.Sharp.IconFont.Auto;
             this.redo.IconSize = 30;
-            this.redo.Location = new System.Drawing.Point(281, 23);
+            this.redo.Location = new System.Drawing.Point(324, 23);
             this.redo.Name = "redo";
             this.redo.Size = new System.Drawing.Size(45, 40);
             this.redo.TabIndex = 6;
             this.redo.UseVisualStyleBackColor = true;
             this.redo.Click += new System.EventHandler(this.redo_Click);
-            // 
-            // iconButton4
-            // 
-            this.iconButton4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.iconButton4.FlatAppearance.BorderSize = 0;
-            this.iconButton4.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.iconButton4.IconChar = FontAwesome.Sharp.IconChar.Moon;
-            this.iconButton4.IconColor = System.Drawing.Color.White;
-            this.iconButton4.IconFont = FontAwesome.Sharp.IconFont.Auto;
-            this.iconButton4.IconSize = 30;
-            this.iconButton4.Location = new System.Drawing.Point(681, 29);
-            this.iconButton4.Name = "iconButton4";
-            this.iconButton4.Size = new System.Drawing.Size(45, 40);
-            this.iconButton4.TabIndex = 5;
-            this.iconButton4.UseVisualStyleBackColor = true;
-            // 
-            // darkMode
-            // 
-            this.darkMode.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.darkMode.Animation = 5;
-            this.darkMode.BackColor = System.Drawing.Color.Transparent;
-            this.darkMode.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("darkMode.BackgroundImage")));
-            this.darkMode.Checked = true;
-            this.darkMode.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.darkMode.InnerCirclePadding = 3;
-            this.darkMode.Location = new System.Drawing.Point(728, 32);
-            this.darkMode.Name = "darkMode";
-            this.darkMode.Size = new System.Drawing.Size(76, 30);
-            this.darkMode.TabIndex = 4;
-            this.darkMode.ThumbMargin = 3;
-            toggleState1.BackColor = System.Drawing.Color.DarkGray;
-            toggleState1.BackColorInner = System.Drawing.Color.White;
-            toggleState1.BorderColor = System.Drawing.Color.DarkGray;
-            toggleState1.BorderColorInner = System.Drawing.Color.White;
-            toggleState1.BorderRadius = 17;
-            toggleState1.BorderRadiusInner = 11;
-            toggleState1.BorderThickness = 1;
-            toggleState1.BorderThicknessInner = 1;
-            this.darkMode.ToggleStateDisabled = toggleState1;
-            toggleState2.BackColor = System.Drawing.Color.Empty;
-            toggleState2.BackColorInner = System.Drawing.Color.Empty;
-            toggleState2.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(236)))), ((int)(((byte)(0)))), ((int)(((byte)(140)))));
-            toggleState2.BorderColorInner = System.Drawing.Color.Empty;
-            toggleState2.BorderRadius = 1;
-            toggleState2.BorderRadiusInner = 1;
-            toggleState2.BorderThickness = 1;
-            toggleState2.BorderThicknessInner = 1;
-            this.darkMode.ToggleStateOff = toggleState2;
-            toggleState3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(83)))), ((int)(((byte)(92)))), ((int)(((byte)(145)))));
-            toggleState3.BackColorInner = System.Drawing.Color.White;
-            toggleState3.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(83)))), ((int)(((byte)(92)))), ((int)(((byte)(145)))));
-            toggleState3.BorderColorInner = System.Drawing.Color.White;
-            toggleState3.BorderRadius = 17;
-            toggleState3.BorderRadiusInner = 11;
-            toggleState3.BorderThickness = 1;
-            toggleState3.BorderThicknessInner = 1;
-            this.darkMode.ToggleStateOn = toggleState3;
-            this.darkMode.Value = true;
-            this.darkMode.CheckedChanged += new System.EventHandler<Bunifu.UI.WinForms.BunifuToggleSwitch.CheckedChangedEventArgs>(this.darkMode_CheckedChanged);
             // 
             // stop
             // 
@@ -297,7 +231,7 @@
             this.stop.IconColor = System.Drawing.Color.Red;
             this.stop.IconFont = FontAwesome.Sharp.IconFont.Auto;
             this.stop.IconSize = 30;
-            this.stop.Location = new System.Drawing.Point(413, 26);
+            this.stop.Location = new System.Drawing.Point(456, 26);
             this.stop.Name = "stop";
             this.stop.Size = new System.Drawing.Size(45, 40);
             this.stop.TabIndex = 3;
@@ -313,7 +247,7 @@
             this.start.IconColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
             this.start.IconFont = FontAwesome.Sharp.IconFont.Auto;
             this.start.IconSize = 30;
-            this.start.Location = new System.Drawing.Point(362, 26);
+            this.start.Location = new System.Drawing.Point(405, 26);
             this.start.Name = "start";
             this.start.Size = new System.Drawing.Size(45, 40);
             this.start.TabIndex = 2;
@@ -370,26 +304,26 @@
             this.searchText.Modified = false;
             this.searchText.Multiline = false;
             this.searchText.Name = "searchText";
-            stateProperties1.BorderColor = System.Drawing.Color.DodgerBlue;
-            stateProperties1.FillColor = System.Drawing.Color.Empty;
-            stateProperties1.ForeColor = System.Drawing.Color.Empty;
-            stateProperties1.PlaceholderForeColor = System.Drawing.Color.Empty;
-            this.searchText.OnActiveState = stateProperties1;
-            stateProperties2.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(204)))), ((int)(((byte)(204)))), ((int)(((byte)(204)))));
-            stateProperties2.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
-            stateProperties2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(109)))), ((int)(((byte)(109)))), ((int)(((byte)(109)))));
-            stateProperties2.PlaceholderForeColor = System.Drawing.Color.DarkGray;
-            this.searchText.OnDisabledState = stateProperties2;
-            stateProperties3.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(105)))), ((int)(((byte)(181)))), ((int)(((byte)(255)))));
-            stateProperties3.FillColor = System.Drawing.Color.Empty;
-            stateProperties3.ForeColor = System.Drawing.Color.Empty;
-            stateProperties3.PlaceholderForeColor = System.Drawing.Color.Empty;
-            this.searchText.OnHoverState = stateProperties3;
-            stateProperties4.BorderColor = System.Drawing.Color.Silver;
-            stateProperties4.FillColor = System.Drawing.Color.White;
-            stateProperties4.ForeColor = System.Drawing.Color.Empty;
-            stateProperties4.PlaceholderForeColor = System.Drawing.Color.Empty;
-            this.searchText.OnIdleState = stateProperties4;
+            stateProperties9.BorderColor = System.Drawing.Color.DodgerBlue;
+            stateProperties9.FillColor = System.Drawing.Color.Empty;
+            stateProperties9.ForeColor = System.Drawing.Color.Empty;
+            stateProperties9.PlaceholderForeColor = System.Drawing.Color.Empty;
+            this.searchText.OnActiveState = stateProperties9;
+            stateProperties10.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(204)))), ((int)(((byte)(204)))), ((int)(((byte)(204)))));
+            stateProperties10.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
+            stateProperties10.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(109)))), ((int)(((byte)(109)))), ((int)(((byte)(109)))));
+            stateProperties10.PlaceholderForeColor = System.Drawing.Color.DarkGray;
+            this.searchText.OnDisabledState = stateProperties10;
+            stateProperties11.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(105)))), ((int)(((byte)(181)))), ((int)(((byte)(255)))));
+            stateProperties11.FillColor = System.Drawing.Color.Empty;
+            stateProperties11.ForeColor = System.Drawing.Color.Empty;
+            stateProperties11.PlaceholderForeColor = System.Drawing.Color.Empty;
+            this.searchText.OnHoverState = stateProperties11;
+            stateProperties12.BorderColor = System.Drawing.Color.Silver;
+            stateProperties12.FillColor = System.Drawing.Color.White;
+            stateProperties12.ForeColor = System.Drawing.Color.Empty;
+            stateProperties12.PlaceholderForeColor = System.Drawing.Color.Empty;
+            this.searchText.OnIdleState = stateProperties12;
             this.searchText.Padding = new System.Windows.Forms.Padding(3);
             this.searchText.PasswordChar = '\0';
             this.searchText.PlaceholderForeColor = System.Drawing.Color.Silver;
@@ -618,8 +552,6 @@
         private Bunifu.UI.WinForms.BunifuTextBox searchText;
         private FontAwesome.Sharp.IconButton stop;
         private FontAwesome.Sharp.IconButton start;
-        private FontAwesome.Sharp.IconButton iconButton4;
-        private Bunifu.UI.WinForms.BunifuToggleSwitch darkMode;
         private FontAwesome.Sharp.IconButton undo;
         private FontAwesome.Sharp.IconButton redo;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
