@@ -276,7 +276,7 @@ namespace midtermProgLab
             int originalSelectionLength = MyRichTextBox.SelectionLength;
             Color originalColor = MyRichTextBox.SelectionColor;
 
-            foreach (Match match in Regex.Matches(lineText, @"\b(DECLARE|num|text|tof|alph|numd|say)\b"))
+            foreach (Match match in Regex.Matches(lineText, @"\b(DECLARE|num|text|tof|alph|numd|say|txt)\b"))
             {
                 MyRichTextBox.Select(startIndex + match.Index, match.Length);
                 MyRichTextBox.SelectionColor = GetColorForToken(match.Value);
@@ -285,6 +285,7 @@ namespace midtermProgLab
             MyRichTextBox.Select(originalSelectionStart, originalSelectionLength);
             MyRichTextBox.SelectionColor = originalColor;
         }
+
         private Color GetColorForToken(string token)
         {
             switch (token)
@@ -299,6 +300,8 @@ namespace midtermProgLab
                     return Color.Blue;
                 case "say":
                     return Color.Green;
+                case "txt":
+                    return Color.Yellow;
                 default:
                     return MyRichTextBox.ForeColor;
             }
@@ -314,20 +317,31 @@ namespace midtermProgLab
         }
 
         private string TranslateToPython(string cobraCode)
-        {
-            cobraCode = Regex.Replace(cobraCode, @"DECLARE\s+num\s+(\w+)\s*=\s*(.+)", "$1 = int($2)");
-            cobraCode = Regex.Replace(cobraCode, @"DECLARE\s+text\s+(\w+)\s*=\s*(.+)", "$1 = str($2)");
-            cobraCode = Regex.Replace(cobraCode, @"DECLARE\s+tof\s+(\w+)\s*=\s*(.+)", "$1 = bool($2)");
-            cobraCode = Regex.Replace(cobraCode, @"DECLARE\s+alph\s+(\w+)\s*=\s*'(.+)'", "$1 = '$2'");
-            cobraCode = Regex.Replace(cobraCode, @"DECLARE\s+numd\s+(\w+)\s*=\s*(.+)", "$1 = float($2)");
+{
+    // Define the txt function to replace str
+    string txtFunctionDefinition = @"
+def txt(value):
+    return str(value)
+";
 
-            cobraCode = Regex.Replace(cobraCode, @"\bsay\(", "print(");
+    // Translate Cobra code to Python code
+    cobraCode = Regex.Replace(cobraCode, @"DECLARE\s+num\s+(\w+)\s*=\s*(.+)", "$1 = int($2)");
+    cobraCode = Regex.Replace(cobraCode, @"DECLARE\s+text\s+(\w+)\s*=\s*(.+)", "$1 = str($2)");
+    cobraCode = Regex.Replace(cobraCode, @"DECLARE\s+tof\s+(\w+)\s*=\s*(.+)", "$1 = bool($2)");
+    cobraCode = Regex.Replace(cobraCode, @"DECLARE\s+alph\s+(\w+)\s*=\s*'(.+)'", "$1 = '$2'");
+    cobraCode = Regex.Replace(cobraCode, @"DECLARE\s+numd\s+(\w+)\s*=\s*(.+)", "$1 = float($2)");
 
-            cobraCode = Regex.Replace(cobraCode, @"\+(\S)", " + $1");
-            cobraCode = Regex.Replace(cobraCode, @"(\S)\+", "$1 + ");
+    cobraCode = Regex.Replace(cobraCode, @"\bsay\(", "print(");
 
-            return cobraCode;
-        }
+    // Replace str() with txt()
+    cobraCode = Regex.Replace(cobraCode, @"\bstr\(", "txt(");
+
+    cobraCode = Regex.Replace(cobraCode, @"\+(\S)", " + $1");
+    cobraCode = Regex.Replace(cobraCode, @"(\S)\+", "$1 + ");
+
+    // Prepend the txt function definition to the translated code
+    return txtFunctionDefinition + cobraCode;
+}
 
         private string ExecutePythonCode(string pythonCode)
         {
