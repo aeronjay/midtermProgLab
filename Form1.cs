@@ -334,7 +334,6 @@ namespace midtermProgLab
             ScriptEngine engine = Python.CreateEngine();
             ScriptScope scope = engine.CreateScope();
 
-            // Redirect stdout
             var output = new MemoryStream();
             var writer = new StreamWriter(output);
             writer.AutoFlush = true;
@@ -356,6 +355,56 @@ namespace midtermProgLab
             {
                 return reader.ReadToEnd();
             }
+        }
+
+        private void lexical_Click(object sender, EventArgs e)
+        {
+            string code = MyRichTextBox.Text;
+
+            // Keywords and datatypes
+            string[] keywords = { "DECLARE", "num", "text", "tof", "alph", "numd" };
+            string[] functions = { "say" };
+            string[] operators = { "+", "=" };
+
+            Dictionary<string, int> keywordCounts = new Dictionary<string, int>();
+            Dictionary<string, int> functionCounts = new Dictionary<string, int>();
+            Dictionary<string, int> operatorCounts = new Dictionary<string, int>();
+
+            foreach (string keyword in keywords)
+            {
+                keywordCounts[keyword] = Regex.Matches(code, $@"\b{Regex.Escape(keyword)}\b").Count;
+            }
+
+            foreach (string function in functions)
+            {
+                functionCounts[function] = Regex.Matches(code, $@"\b{Regex.Escape(function)}\b").Count;
+            }
+
+            foreach (string op in operators)
+            {
+                operatorCounts[op] = Regex.Matches(code, Regex.Escape(op)).Count;
+            }
+
+            StringBuilder output = new StringBuilder();
+            output.AppendLine("Keywords:");
+            foreach (var kvp in keywordCounts)
+            {
+                output.AppendLine($"{kvp.Key} : {kvp.Value}");
+            }
+
+            output.AppendLine("\nFunctions:");
+            foreach (var kvp in functionCounts)
+            {
+                output.AppendLine($"{kvp.Key} : {kvp.Value}");
+            }
+
+            output.AppendLine("\nOperators:");
+            foreach (var kvp in operatorCounts)
+            {
+                output.AppendLine($"{kvp.Key} : {kvp.Value}");
+            }
+
+            MessageBox.Show(output.ToString(), "Lexical Analysis", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 

@@ -124,6 +124,7 @@
             this.lexical.Size = new System.Drawing.Size(45, 40);
             this.lexical.TabIndex = 12;
             this.lexical.UseVisualStyleBackColor = true;
+            this.lexical.Click += new System.EventHandler(this.lexical_Click);
             // 
             // zoomOutCode
             // 
