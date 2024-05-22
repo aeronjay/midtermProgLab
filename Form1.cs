@@ -307,10 +307,8 @@ def txt(value):
     return str(value)
 ";
 
-            // List of reserved keywords
             string[] reservedKeywords = { "DECLARE", "alph", "num", "numd", "text", "tof", "say", "txt" };
 
-            // Regex pattern to find variable declarations
             string variablePattern = @"DECLARE\s+(num|text|tof|alph|numd)\s+(\w+)\s*=";
 
             MatchCollection matches = Regex.Matches(cobraCode, variablePattern);
