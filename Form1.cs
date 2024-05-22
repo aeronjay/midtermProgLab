@@ -12,6 +12,7 @@ namespace midtermProgLab
 {
     public partial class Form1 : Form
     {
+        private List<Form2> openOutputForms = new List<Form2>();
         private string currentFilePath;
         private Label fileNameLabel;
 
@@ -293,6 +294,7 @@ namespace midtermProgLab
                 Form2 outputForm = new Form2();
                 outputForm.SetOutput(ExecuteCobraCode(pythonCode));
                 outputForm.Show();
+                openOutputForms.Add(outputForm);
             }
             catch (ArgumentException ex)
             {
@@ -548,6 +550,15 @@ def txt(value):
 
             MyRichTextBox.Select(MyRichTextBox.TextLength, 0);
             MyRichTextBox.SelectionBackColor = MyRichTextBox.BackColor;
+        }
+
+        private void stop_Click(object sender, EventArgs e)
+        {
+            foreach (Form2 form in openOutputForms)
+            {
+                form.Close();
+            }
+            openOutputForms.Clear();
         }
     }
 
