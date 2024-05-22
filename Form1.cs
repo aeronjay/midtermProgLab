@@ -284,35 +284,76 @@ namespace midtermProgLab
 
         private void start_Click(object sender, EventArgs e)
         {
-            string cobraCode = MyRichTextBox.Text;
-            string pythonCode = Tokenize(cobraCode);
-            Form2 outputForm = new Form2();
-            outputForm.SetOutput(ExecuteCobraCode(pythonCode));
-            outputForm.Show();
+            try
+            {
+                string cobraCode = MyRichTextBox.Text;
+                string pythonCode = Tokenize(cobraCode);
+                Form2 outputForm = new Form2();
+                outputForm.SetOutput(ExecuteCobraCode(pythonCode));
+                outputForm.Show();
+            }
+            catch (ArgumentException ex)
+            {
+                MessageBox.Show(ex.Message, "Syntax Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private string Tokenize(string cobraCode)
-{
-    string txtFunctionDefinition = @"
+        {
+            string txtFunctionDefinition = @"
 def txt(value):
     return str(value)
 ";
 
-    cobraCode = Regex.Replace(cobraCode, @"DECLARE\s+num\s+(\w+)\s*=\s*(.+)", "$1 = int($2)");
-    cobraCode = Regex.Replace(cobraCode, @"DECLARE\s+text\s+(\w+)\s*=\s*(.+)", "$1 = str($2)");
-    cobraCode = Regex.Replace(cobraCode, @"DECLARE\s+tof\s+(\w+)\s*=\s*(.+)", "$1 = bool($2)");
-    cobraCode = Regex.Replace(cobraCode, @"DECLARE\s+alph\s+(\w+)\s*=\s*'(.+)'", "$1 = '$2'");
-    cobraCode = Regex.Replace(cobraCode, @"DECLARE\s+numd\s+(\w+)\s*=\s*(.+)", "$1 = float($2)");
+            // List of reserved keywords
+            string[] reservedKeywords = { "DECLARE", "alph", "num", "numd", "text", "tof", "say", "txt" };
 
-    cobraCode = Regex.Replace(cobraCode, @"\bsay\(", "print(");
+            // Regex pattern to find variable declarations
+            string variablePattern = @"DECLARE\s+(num|text|tof|alph|numd)\s+(\w+)\s*=";
 
-    cobraCode = Regex.Replace(cobraCode, @"\bstr\(", "txt(");
+            MatchCollection matches = Regex.Matches(cobraCode, variablePattern);
+            foreach (Match match in matches)
+            {
+                string variableName = match.Groups[2].Value;
+                if (Array.Exists(reservedKeywords, keyword => keyword.Equals(variableName, StringComparison.OrdinalIgnoreCase)))
+                {
+                    int lineNumber = GetLineNumber(cobraCode, match.Index);
+                    throw new ArgumentException($"Error: '{variableName}' is a reserved keyword and cannot be used as an identifier (Line {lineNumber}).");
+                }
+            }
 
-    cobraCode = Regex.Replace(cobraCode, @"\+(\S)", " + $1");
-    cobraCode = Regex.Replace(cobraCode, @"(\S)\+", "$1 + ");
+            initializeTokens(ref cobraCode);
 
-    return txtFunctionDefinition + cobraCode;
-}
+            cobraCode = Regex.Replace(cobraCode, @"\bsay\(", "print(");
+            cobraCode = Regex.Replace(cobraCode, @"\bstr\(", "txt(");
+            cobraCode = Regex.Replace(cobraCode, @"\+(\S)", " + $1");
+            cobraCode = Regex.Replace(cobraCode, @"(\S)\+", "$1 + ");
+
+            return txtFunctionDefinition + cobraCode;
+        }
+
+        private int GetLineNumber(string text, int charIndex)
+        {
+            int lineNumber = 1;
+            for (int i = 0; i < charIndex; i++)
+            {
+                if (text[i] == '\n')
+                {
+                    lineNumber++;
+                }
+            }
+            return lineNumber;
+        }
+
+        private void initializeTokens(ref string cobraCode)
+        {
+            cobraCode = Regex.Replace(cobraCode, @"DECLARE\s+num\s+(\w+)\s*=\s*(.+)", "$1 = int($2)");
+            cobraCode = Regex.Replace(cobraCode, @"DECLARE\s+text\s+(\w+)\s*=\s*(.+)", "$1 = str($2)");
+            cobraCode = Regex.Replace(cobraCode, @"DECLARE\s+tof\s+(\w+)\s*=\s*(.+)", "$1 = bool($2)");
+            cobraCode = Regex.Replace(cobraCode, @"DECLARE\s+alph\s+(\w+)\s*=\s*'(.+)'", "$1 = '$2'");
+            cobraCode = Regex.Replace(cobraCode, @"DECLARE\s+numd\s+(\w+)\s*=\s*(.+)", "$1 = float($2)");
+        }
+
 
         private string ExecuteCobraCode(string pythonCode)
         {
