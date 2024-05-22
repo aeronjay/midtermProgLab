@@ -293,13 +293,11 @@ namespace midtermProgLab
 
         private string Tokenize(string cobraCode)
 {
-    // Define the txt function to replace str
     string txtFunctionDefinition = @"
 def txt(value):
     return str(value)
 ";
 
-    // Translate Cobra code to Python code
     cobraCode = Regex.Replace(cobraCode, @"DECLARE\s+num\s+(\w+)\s*=\s*(.+)", "$1 = int($2)");
     cobraCode = Regex.Replace(cobraCode, @"DECLARE\s+text\s+(\w+)\s*=\s*(.+)", "$1 = str($2)");
     cobraCode = Regex.Replace(cobraCode, @"DECLARE\s+tof\s+(\w+)\s*=\s*(.+)", "$1 = bool($2)");
@@ -308,13 +306,11 @@ def txt(value):
 
     cobraCode = Regex.Replace(cobraCode, @"\bsay\(", "print(");
 
-    // Replace str() with txt()
     cobraCode = Regex.Replace(cobraCode, @"\bstr\(", "txt(");
 
     cobraCode = Regex.Replace(cobraCode, @"\+(\S)", " + $1");
     cobraCode = Regex.Replace(cobraCode, @"(\S)\+", "$1 + ");
 
-    // Prepend the txt function definition to the translated code
     return txtFunctionDefinition + cobraCode;
 }
 
@@ -350,7 +346,6 @@ def txt(value):
         {
             string code = MyRichTextBox.Text;
 
-            // Keywords and datatypes
             string[] keywords = { "DECLARE", "num", "text", "tof", "alph", "numd" };
             string[] functions = { "say" };
             string[] operators = { "+", "=" };
@@ -486,7 +481,6 @@ def txt(value):
 
         private void HighlightSearchResults(string searchText)
         {
-            // Reset previous highlights
             MyRichTextBox.SelectAll();
             MyRichTextBox.SelectionBackColor = MyRichTextBox.BackColor;
 
@@ -502,7 +496,7 @@ def txt(value):
                 if (index != -1)
                 {
                     MyRichTextBox.Select(index, searchText.Length);
-                    MyRichTextBox.SelectionBackColor = Color.Yellow; // Highlight color
+                    MyRichTextBox.SelectionBackColor = Color.Yellow; 
                     startIndex = index + searchText.Length;
                 }
                 else
