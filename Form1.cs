@@ -204,24 +204,6 @@ namespace midtermProgLab
             }
         }
 
-        private void ColorWords(RichTextBox richTextBox, string word, Color color)
-        {
-            string pattern = $@"\b{Regex.Escape(word)}\b";
-
-            int originalSelectionStart = richTextBox.SelectionStart;
-            int originalSelectionLength = richTextBox.SelectionLength;
-            Color originalColor = richTextBox.SelectionColor;
-
-            foreach (Match match in Regex.Matches(richTextBox.Text, pattern))
-            {
-                richTextBox.Select(match.Index, match.Length);
-                richTextBox.SelectionColor = color;
-            }
-
-            richTextBox.Select(originalSelectionStart, originalSelectionLength);
-            richTextBox.SelectionColor = originalColor;
-        }
-
         private void ApplySyntaxHighlighting()
         {
             MyRichTextBox.SuspendLayout();
@@ -303,13 +285,13 @@ namespace midtermProgLab
         private void start_Click(object sender, EventArgs e)
         {
             string cobraCode = MyRichTextBox.Text;
-            string pythonCode = TranslateToPython(cobraCode);
+            string pythonCode = Tokenize(cobraCode);
             Form2 outputForm = new Form2();
-            outputForm.SetOutput(ExecutePythonCode(pythonCode));
+            outputForm.SetOutput(ExecuteCobraCode(pythonCode));
             outputForm.Show();
         }
 
-        private string TranslateToPython(string cobraCode)
+        private string Tokenize(string cobraCode)
 {
     // Define the txt function to replace str
     string txtFunctionDefinition = @"
@@ -336,7 +318,7 @@ def txt(value):
     return txtFunctionDefinition + cobraCode;
 }
 
-        private string ExecutePythonCode(string pythonCode)
+        private string ExecuteCobraCode(string pythonCode)
         {
             ScriptEngine engine = Python.CreateEngine();
             ScriptScope scope = engine.CreateScope();
