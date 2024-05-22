@@ -38,13 +38,15 @@ namespace midtermProgLab
             }
             else if (elapsedTime == 1500)
             {
+                label1.Text = "Loading... Initializing..";
                 progressBar1.Value = 50;
             }
             else if (elapsedTime == 3500)
             {
+                label1.Text = "Loading... Getting Cobra Ready..";
                 progressBar1.Value = 80;
             }
-            else if (elapsedTime >= 5000)
+            else if (elapsedTime >= 6000)
             {
                 timer.Stop();
                 ShowForm2();

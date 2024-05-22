@@ -169,6 +169,9 @@
     <None Include="img\ss.gif" />
     <None Include="img\ss1.gif" />
     <None Include="img\ss3.gif" />
+    <None Include="img\ss4.gif" />
+    <None Include="img\ss6.gif" />
+    <None Include="img\ss6-unscreen.gif" />
     <Content Include="lib\abc.py" />
     <Content Include="lib\aifc.py" />
     <Content Include="lib\antigravity.py" />
