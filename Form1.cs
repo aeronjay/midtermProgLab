@@ -155,6 +155,7 @@ namespace midtermProgLab
             {
                 MyRichTextBox.Undo();
             }
+            MyRichTextBox.Undo();
         }
 
         private void redo_Click(object sender, EventArgs e)
@@ -163,6 +164,7 @@ namespace midtermProgLab
             {
                 MyRichTextBox.Redo();
             }
+            MyRichTextBox.Redo();
         }
 
         private void savefile_Click(object sender, EventArgs e)
