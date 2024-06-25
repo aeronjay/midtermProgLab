@@ -133,6 +133,33 @@ namespace midtermProgLab
             MyRichTextBox.Font = new Font(MyRichTextBox.Font.FontFamily, newSize);
             MyPictureBox.Invalidate();
         }
+        private string ExecuteCobraCode(string pythonCode)
+        {
+            ScriptEngine engine = Python.CreateEngine();
+            ScriptScope scope = engine.CreateScope();
+
+            var output = new MemoryStream();
+            var writer = new StreamWriter(output);
+            writer.AutoFlush = true;
+            engine.Runtime.IO.SetOutput(output, writer);
+
+            try
+            {
+                engine.Execute(pythonCode, scope);
+            }
+            catch (Exception ex)
+            {
+                var eo = engine.GetService<Microsoft.Scripting.Hosting.ExceptionOperations>();
+                string error = eo.FormatException(ex);
+                return $"Error: {ex.Message}\n{error}";
+            }
+
+            output.Seek(0, SeekOrigin.Begin);
+            using (var reader = new StreamReader(output))
+            {
+                return reader.ReadToEnd();
+            }
+        }
 
         private void zoomInCode_Click(object sender, EventArgs e)
         {
@@ -166,6 +193,19 @@ namespace midtermProgLab
                 MyRichTextBox.Redo();
             }
             MyRichTextBox.Redo();
+        }
+        private void initializeTokens(ref string cobraCode)
+        {
+            cobraCode = Regex.Replace(cobraCode, @"DECLARE\s+num\s+(\w+)\s*=\s*(.+)", "$1 = int($2)");
+            cobraCode = Regex.Replace(cobraCode, @"DECLARE\s+text\s+(\w+)\s*=\s*(.+)", "$1 = str($2)");
+            cobraCode = Regex.Replace(cobraCode, @"DECLARE\s+tof\s+(\w+)\s*=\s*(.+)", "$1 = bool($2)");
+            cobraCode = Regex.Replace(cobraCode, @"DECLARE\s+alph\s+(\w+)\s*=\s*'(.+)'", "$1 = '$2'");
+            cobraCode = Regex.Replace(cobraCode, @"DECLARE\s+numd\s+(\w+)\s*=\s*(.+)", "$1 = float($2)");
+
+            cobraCode = Regex.Replace(cobraCode, @"\bsay\(", "print(");
+            cobraCode = Regex.Replace(cobraCode, @"\bstr\(", "txt(");
+            cobraCode = Regex.Replace(cobraCode, @"\+(\S)", " + $1");
+            cobraCode = Regex.Replace(cobraCode, @"(\S)\+", "$1 + ");
         }
 
         private void savefile_Click(object sender, EventArgs e)
@@ -326,10 +366,7 @@ def txt(value):
 
             initializeTokens(ref cobraCode);
 
-            cobraCode = Regex.Replace(cobraCode, @"\bsay\(", "print(");
-            cobraCode = Regex.Replace(cobraCode, @"\bstr\(", "txt(");
-            cobraCode = Regex.Replace(cobraCode, @"\+(\S)", " + $1");
-            cobraCode = Regex.Replace(cobraCode, @"(\S)\+", "$1 + ");
+            
 
             return txtFunctionDefinition + cobraCode;
         }
@@ -347,43 +384,6 @@ def txt(value):
             return lineNumber;
         }
 
-        private void initializeTokens(ref string cobraCode)
-        {
-            cobraCode = Regex.Replace(cobraCode, @"DECLARE\s+num\s+(\w+)\s*=\s*(.+)", "$1 = int($2)");
-            cobraCode = Regex.Replace(cobraCode, @"DECLARE\s+text\s+(\w+)\s*=\s*(.+)", "$1 = str($2)");
-            cobraCode = Regex.Replace(cobraCode, @"DECLARE\s+tof\s+(\w+)\s*=\s*(.+)", "$1 = bool($2)");
-            cobraCode = Regex.Replace(cobraCode, @"DECLARE\s+alph\s+(\w+)\s*=\s*'(.+)'", "$1 = '$2'");
-            cobraCode = Regex.Replace(cobraCode, @"DECLARE\s+numd\s+(\w+)\s*=\s*(.+)", "$1 = float($2)");
-        }
-
-
-        private string ExecuteCobraCode(string pythonCode)
-        {
-            ScriptEngine engine = Python.CreateEngine();
-            ScriptScope scope = engine.CreateScope();
-
-            var output = new MemoryStream();
-            var writer = new StreamWriter(output);
-            writer.AutoFlush = true;
-            engine.Runtime.IO.SetOutput(output, writer);
-
-            try
-            {
-                engine.Execute(pythonCode, scope);
-            }
-            catch (Exception ex)
-            {
-                var eo = engine.GetService<Microsoft.Scripting.Hosting.ExceptionOperations>();
-                string error = eo.FormatException(ex);
-                return $"Error: {ex.Message}\n{error}";
-            }
-
-            output.Seek(0, SeekOrigin.Begin);
-            using (var reader = new StreamReader(output))
-            {
-                return reader.ReadToEnd();
-            }
-        }
 
         private void lexical_Click(object sender, EventArgs e)
         {
