@@ -509,9 +509,10 @@ namespace midtermProgLab
             try
             {
                 string cobraCode = MyRichTextBox.Text;
-                string pythonCode = Tokenize(cobraCode);
+                string tokenized = Tokenize(cobraCode);
+                string interpreted = InterpretCobraCode(cobraCode);
                 Form2 outputForm = new Form2();
-                outputForm.SetOutput(ExecuteCobraCode(pythonCode));
+                outputForm.SetOutput(ExecuteCobraCode(tokenized));
                 outputForm.Show();
                 openOutputForms.Add(outputForm);
             }
@@ -548,6 +549,103 @@ def txt(value):
 
 
             return txtFunctionDefinition + cobraCode;
+        }
+        private string InterpretCobraCode(string code)
+        {
+            var variables = new Dictionary<string, object>();
+            var lines = code.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            var output = new StringBuilder();
+
+            var declarePattern = new Regex(@"^\s*DECLARE\s+(text|num|tof|alph|numd)\s+(\w+)\s*=\s*(.+)$", RegexOptions.IgnoreCase);
+            var sayPattern = new Regex(@"^\s*say\((.+)\)\s*$", RegexOptions.IgnoreCase);
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                var line = lines[i];
+                try
+                {
+                    if (declarePattern.IsMatch(line))
+                    {
+                        var match = declarePattern.Match(line);
+                        string dataType = match.Groups[1].Value;
+                        string identifier = match.Groups[2].Value;
+                        string value = match.Groups[3].Value;
+
+                        variables[identifier] = ParseValue(dataType, value, variables);
+                    }
+                    else if (sayPattern.IsMatch(line))
+                    {
+                        var match = sayPattern.Match(line);
+                        string expression = match.Groups[1].Value;
+
+                        output.AppendLine(EvaluateExpression(expression, variables));
+                    }
+                    else
+                    {
+                        throw new Exception($"Syntax error on line {i + 1}: {line}");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception($"Error on line {i + 1}: {ex.Message}");
+                }
+            }
+
+            return output.ToString();
+        }
+
+        private object ParseValue(string dataType, string value, Dictionary<string, object> variables)
+        {
+            string evaluatedValue = EvaluateExpression(value, variables);
+
+            switch (dataType.ToLower())
+            {
+                case "text":
+                    return evaluatedValue;
+                case "num":
+                    return int.Parse(evaluatedValue);
+                case "tof":
+                    return bool.Parse(evaluatedValue);
+                case "alph":
+                    if (evaluatedValue.Length == 1)
+                        return char.Parse(evaluatedValue);
+                    else
+                        throw new Exception("String must be exactly one character long.");
+                case "numd":
+                    return double.Parse(evaluatedValue);
+                default:
+                    throw new Exception($"Unknown data type: {dataType}");
+            }
+        }
+
+        private string EvaluateExpression(string expression, Dictionary<string, object> variables)
+        {
+            var variablePattern = new Regex(@"\b(\w+)\b", RegexOptions.IgnoreCase);
+            var evaluatedExpression = variablePattern.Replace(expression, match =>
+            {
+                string variableName = match.Groups[1].Value;
+
+                if (variables.ContainsKey(variableName))
+                {
+                    return variables[variableName].ToString();
+                }
+                else if (variableName == "True" || variableName == "False")
+                {
+                    return variableName;
+                }
+                else
+                {
+                    throw new Exception($"Unknown variable: {variableName}");
+                }
+            });
+
+            var stringPattern = new Regex(@"""([^""]*)""");
+            evaluatedExpression = stringPattern.Replace(evaluatedExpression, match =>
+            {
+                return match.Groups[1].Value;
+            });
+
+            return evaluatedExpression;
         }
 
         private int GetLineNumber(string text, int charIndex)
