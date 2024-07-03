@@ -133,7 +133,7 @@ namespace midtermProgLab
             MyRichTextBox.Font = new Font(MyRichTextBox.Font.FontFamily, newSize);
             MyPictureBox.Invalidate();
         }
-        private string ExecuteCobraCode(string pythonCode)
+        private string ExecuteCobraCode(string cobraCode)
         {
             ScriptEngine engine = Python.CreateEngine();
             ScriptScope scope = engine.CreateScope();
@@ -145,7 +145,15 @@ namespace midtermProgLab
 
             try
             {
-                engine.Execute(pythonCode, scope);
+                string prelude = @"
+def say(message):
+    print(message)
+def txt(value):
+    return str(value)
+";
+                engine.Execute(prelude, scope);
+
+                engine.Execute(cobraCode, scope);
             }
             catch (Exception ex)
             {
@@ -160,6 +168,7 @@ namespace midtermProgLab
                 return reader.ReadToEnd();
             }
         }
+
 
         private void zoomInCode_Click(object sender, EventArgs e)
         {
@@ -212,6 +221,23 @@ namespace midtermProgLab
             cobraCode = Regex.Replace(cobraCode, @"\bedi\s*:\s*\n", "else:\n");
 
             cobraCode = Regex.Replace(cobraCode, @"DECLARE\s+(\w+)\s+tas\s+repeat\((\d+)\)\s*:\s*\n", "for $1 in range($2):\n");
+
+            cobraCode = Regex.Replace(cobraCode, @"lipat\s+(\w+)\s*:\s*\n((?:\s*kaso\s+\S+\s*:\s*.+\n)+)\s*hinto", m =>
+            {
+                string variable = m.Groups[1].Value;
+                string cases = m.Groups[2].Value;
+
+                var caseStatements = new List<string>();
+                foreach (Match caseMatch in Regex.Matches(cases, @"\s*kaso\s+(\S+)\s*:\s*(.+)\n"))
+                {
+                    string caseValue = caseMatch.Groups[1].Value;
+                    string caseCode = caseMatch.Groups[2].Value;
+                    caseStatements.Add($"{(caseStatements.Count == 0 ? "if" : "elif")} {variable} == {caseValue}:\n    {caseCode}");
+                }
+
+                return string.Join("\n", caseStatements);
+            });
+
         }
 
         private void savefile_Click(object sender, EventArgs e)
@@ -560,102 +586,277 @@ def txt(value):
             return txtFunctionDefinition + cobraCode;
         }
         
-        private string InterpretCobraCode(string code)
+        private void InterpretCobraCode(string code)
         {
             var variables = new Dictionary<string, object>();
-            var lines = code.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-            var output = new StringBuilder();
 
-            var declarePattern = new Regex(@"^\s*DECLARE\s+(text|num|tof|alph|numd)\s+(\w+)\s*=\s*(.+)$", RegexOptions.IgnoreCase);
-            var sayPattern = new Regex(@"^\s*say\((.+)\)\s*$", RegexOptions.IgnoreCase);
+            variables.Clear(); // Clear variables before interpreting new code
+            var lines = code.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
             for (int i = 0; i < lines.Length; i++)
             {
-                var line = lines[i];
-                try
+                string line = lines[i].Trim();
+
+                if (string.IsNullOrWhiteSpace(line))
+                    continue;
+
+                if (line.StartsWith("DECLARE", StringComparison.OrdinalIgnoreCase))
                 {
-                    if (declarePattern.IsMatch(line))
-                    {
-                        var match = declarePattern.Match(line);
-                        string dataType = match.Groups[1].Value;
-                        string identifier = match.Groups[2].Value;
-                        string value = match.Groups[3].Value;
-
-                        variables[identifier] = ParseValue(dataType, value, variables);
-                    }
-                    else if (sayPattern.IsMatch(line))
-                    {
-                        var match = sayPattern.Match(line);
-                        string expression = match.Groups[1].Value;
-
-                        output.AppendLine(EvaluateExpression(expression, variables));
-                    }
-                    else
-                    {
-                        throw new Exception($"Syntax error on line {i + 1}: {line}");
-                    }
+                    ProcessDeclaration(line, i + 1);
                 }
-                catch (Exception ex)
+                else if (line.StartsWith("say(", StringComparison.OrdinalIgnoreCase))
                 {
-                    throw new Exception($"Error on line {i + 1}: {ex.Message}");
+                    ProcessSayFunction(line, i + 1);
+                }
+                else if (line.StartsWith("pag", StringComparison.OrdinalIgnoreCase))
+                {
+                    ProcessIfStatement(line, i + 1);
+                }
+                else if (line.StartsWith("kung", StringComparison.OrdinalIgnoreCase))
+                {
+                    ProcessIfElseStatement(line, i + 1);
+                }
+                else if (line.StartsWith("lipat", StringComparison.OrdinalIgnoreCase))
+                {
+                    ProcessSwitchStatement(line, i + 1);
+                }
+                else if (line.StartsWith("hinto", StringComparison.OrdinalIgnoreCase))
+                {
+                    break; // Exit loop on 'hinto'
+                }
+                else
+                {
+                    throw new Exception($"Syntax error on line {i + 1}: Unknown statement.");
                 }
             }
-
-            return output.ToString();
         }
 
-        private object ParseValue(string dataType, string value, Dictionary<string, object> variables)
+        private void ProcessDeclaration(string line, int lineNumber)
         {
-            string evaluatedValue = EvaluateExpression(value, variables);
+            var variables = new Dictionary<string, object>();
+            // Example: DECLARE text name = "ARJO" + " LADIA"
+            var declarePattern = new Regex(@"^\s*DECLARE\s+(text|num|tof|alph|numd)\s+(\w+)\s*=\s*(.+)$", RegexOptions.IgnoreCase);
+            var match = declarePattern.Match(line);
 
-            switch (dataType.ToLower())
+            if (!match.Success)
+                throw new Exception($"Syntax error on line {lineNumber}: Invalid declaration.");
+
+            string dataType = match.Groups[1].Value.ToLower();
+            string identifier = match.Groups[2].Value;
+            string value = match.Groups[3].Value.Trim();
+
+            object parsedValue = ParseValue(dataType, value);
+
+            variables[identifier] = parsedValue;
+        }
+
+        private object ParseValue(string dataType, string value)
+        {
+            if (dataType.Equals("text", StringComparison.OrdinalIgnoreCase))
             {
-                case "text":
-                    return evaluatedValue;
-                case "num":
-                    return int.Parse(evaluatedValue);
-                case "tof":
-                    return bool.Parse(evaluatedValue);
-                case "alph":
-                    if (evaluatedValue.Length == 1)
-                        return char.Parse(evaluatedValue);
-                    else
-                        throw new Exception("String must be exactly one character long.");
-                case "numd":
-                    return double.Parse(evaluatedValue);
-                default:
-                    throw new Exception($"Unknown data type: {dataType}");
+                // Handle text (string) values
+                if (value.StartsWith("\"") && value.EndsWith("\""))
+                {
+                    return value.Substring(1, value.Length - 2); // Remove surrounding quotes
+                }
+                else
+                {
+                    throw new Exception($"Invalid text value: {value}");
+                }
+            }
+            else if (dataType.Equals("num", StringComparison.OrdinalIgnoreCase))
+            {
+                // Handle numeric (int) values
+                if (int.TryParse(value, out int intValue))
+                {
+                    return intValue;
+                }
+                else
+                {
+                    throw new Exception($"Invalid num value: {value}");
+                }
+            }
+            else if (dataType.Equals("tof", StringComparison.OrdinalIgnoreCase))
+            {
+                // Handle boolean (bool) values
+                if (bool.TryParse(value, out bool boolValue))
+                {
+                    return boolValue;
+                }
+                else
+                {
+                    throw new Exception($"Invalid tof value: {value}");
+                }
+            }
+            else if (dataType.Equals("alph", StringComparison.OrdinalIgnoreCase))
+            {
+                // Handle character (char) values
+                if (value.Length == 1 && value.StartsWith("'") && value.EndsWith("'"))
+                {
+                    return value[0];
+                }
+                else
+                {
+                    throw new Exception($"Invalid alph value: {value}");
+                }
+            }
+            else if (dataType.Equals("numd", StringComparison.OrdinalIgnoreCase))
+            {
+                // Handle decimal (double) values
+                if (double.TryParse(value, out double doubleValue))
+                {
+                    return doubleValue;
+                }
+                else
+                {
+                    throw new Exception($"Invalid numd value: {value}");
+                }
+            }
+            else
+            {
+                throw new Exception($"Unknown data type: {dataType}");
             }
         }
 
-        private string EvaluateExpression(string expression, Dictionary<string, object> variables)
+        private void ProcessSayFunction(string line, int lineNumber)
         {
-            var variablePattern = new Regex(@"\b(\w+)\b", RegexOptions.IgnoreCase);
-            var evaluatedExpression = variablePattern.Replace(expression, match =>
+            // Example: say("Welcome " + name)
+            var sayPattern = new Regex(@"^\s*say\((.+)\)\s*$", RegexOptions.IgnoreCase);
+            var match = sayPattern.Match(line);
+
+            if (!match.Success)
+                throw new Exception($"Syntax error on line {lineNumber}: Invalid say statement.");
+
+            string expression = match.Groups[1].Value.Trim();
+
+            string evaluatedString = EvaluateExpression(expression);
+
+            ShowOutput(evaluatedString);
+        }
+
+        private string EvaluateExpression(string expression)
+        {
+            var variables = new Dictionary<string, object>();
+            var variablePattern = new Regex(@"\b(\w+)\b");
+            var evaluatedExpression = new StringBuilder();
+            int lastIndex = 0;
+
+            foreach (Match match in variablePattern.Matches(expression))
             {
                 string variableName = match.Groups[1].Value;
+                int index = match.Index;
+
+                // Append text before the variable
+                evaluatedExpression.Append(expression.Substring(lastIndex, index - lastIndex));
 
                 if (variables.ContainsKey(variableName))
                 {
-                    return variables[variableName].ToString();
+                    evaluatedExpression.Append(variables[variableName].ToString());
                 }
                 else if (variableName == "True" || variableName == "False")
                 {
-                    return variableName;
+                    evaluatedExpression.Append(variableName);
+                }
+                else if (variableName.StartsWith("\"") && variableName.EndsWith("\""))
+                {
+                    evaluatedExpression.Append(variableName);
+                }
+                else if (variableName.StartsWith("'") && variableName.EndsWith("'") && variableName.Length == 3)
+                {
+                    evaluatedExpression.Append(variableName);
                 }
                 else
                 {
                     throw new Exception($"Unknown variable: {variableName}");
                 }
-            });
 
-            var stringPattern = new Regex(@"""([^""]*)""");
-            evaluatedExpression = stringPattern.Replace(evaluatedExpression, match =>
+                lastIndex = index + variableName.Length;
+            }
+
+            evaluatedExpression.Append(expression.Substring(lastIndex));
+
+            return evaluatedExpression.ToString().Trim('"');
+        }
+
+        private void ProcessIfStatement(string line, int lineNumber)
+        {
+            var i = 0;
+            var ifPattern = new Regex(@"^\s*pag\s*\((.+)\)\s*:\s*$", RegexOptions.IgnoreCase);
+            var match = ifPattern.Match(line);
+
+            if (!match.Success)
+                throw new Exception($"Syntax error on line {lineNumber}: Invalid pag statement.");
+
+            string condition = match.Groups[1].Value.Trim();
+
+            if (EvaluateCondition(condition))
             {
-                return match.Groups[1].Value;
-            });
+                i++;
+            }
+        }
 
-            return evaluatedExpression;
+        private void ProcessIfElseStatement(string line, int lineNumber)
+        {
+            var i = 0;
+            var ifElsePattern = new Regex(@"^\s*kung\s*\((.+)\)\s*:\s*$", RegexOptions.IgnoreCase);
+            var match = ifElsePattern.Match(line);
+
+            if (!match.Success)
+                throw new Exception($"Syntax error on line {lineNumber}: Invalid kung statement.");
+
+            string condition = match.Groups[1].Value.Trim();
+
+            if (EvaluateCondition(condition))
+            {
+                i++;
+            }
+            else
+            {
+                i++;
+            }
+        }
+
+        private void ProcessSwitchStatement(string line, int lineNumber)
+        {
+            var variables = new Dictionary<string, object>();
+            var i = 0;
+            var switchPattern = new Regex(@"^\s*lipat\s+(\w+)\s*:\s*$", RegexOptions.IgnoreCase);
+            var match = switchPattern.Match(line);
+
+            if (!match.Success)
+                throw new Exception($"Syntax error on line {lineNumber}: Invalid lipat statement.");
+
+            string switchVariable = match.Groups[1].Value.Trim();
+
+            if (variables.ContainsKey(switchVariable))
+            {
+                // Execute switch case
+                i++;
+            }
+        }
+
+        private bool EvaluateCondition(string condition)
+        {
+            // Implement condition evaluation logic here
+            return true; // Placeholder, replace with actual evaluation
+        }
+
+        private void ShowOutput(string output)
+        {
+            Form2 outputForm = new Form2();
+            outputForm.SetOutput(output);
+            outputForm.Show();
+            openOutputForms.Add(outputForm);
+        }
+
+        private void ShowErrorOutput(string error)
+        {
+            MessageBox.Show(error, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
+        private void ShowSuccessOutput()
+        {
+            MessageBox.Show("Code executed successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private int GetLineNumber(string text, int charIndex)
