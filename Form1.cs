@@ -325,64 +325,7 @@ namespace midtermProgLab
             }
         }
 
-        private void start_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                string cobraCode = MyRichTextBox.Text;
-                string pythonCode = Tokenize(cobraCode);
-                Form2 outputForm = new Form2();
-                outputForm.SetOutput(ExecuteCobraCode(pythonCode));
-                outputForm.Show();
-                openOutputForms.Add(outputForm);
-            }
-            catch (ArgumentException ex)
-            {
-                MessageBox.Show(ex.Message, "Syntax Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private string Tokenize(string cobraCode)
-        {
-            string txtFunctionDefinition = @"
-def txt(value):
-    return str(value)
-";
-
-            string[] reservedKeywords = { "DECLARE", "alph", "num", "numd", "text", "tof", "say", "txt" };
-
-            string variablePattern = @"DECLARE\s+(num|text|tof|alph|numd)\s+(\w+)\s*=";
-
-            MatchCollection matches = Regex.Matches(cobraCode, variablePattern);
-            foreach (Match match in matches)
-            {
-                string variableName = match.Groups[2].Value;
-                if (Array.Exists(reservedKeywords, keyword => keyword.Equals(variableName, StringComparison.OrdinalIgnoreCase)))
-                {
-                    int lineNumber = GetLineNumber(cobraCode, match.Index);
-                    throw new ArgumentException($"Error: '{variableName}' is a reserved keyword and cannot be used as an identifier (Line {lineNumber}).");
-                }
-            }
-
-            initializeTokens(ref cobraCode);
-
-            
-
-            return txtFunctionDefinition + cobraCode;
-        }
-
-        private int GetLineNumber(string text, int charIndex)
-        {
-            int lineNumber = 1;
-            for (int i = 0; i < charIndex; i++)
-            {
-                if (text[i] == '\n')
-                {
-                    lineNumber++;
-                }
-            }
-            return lineNumber;
-        }
+        
 
 
         private void lexical_Click(object sender, EventArgs e)
@@ -559,6 +502,65 @@ def txt(value):
                 form.Close();
             }
             openOutputForms.Clear();
+        }
+
+        private void start_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string cobraCode = MyRichTextBox.Text;
+                string pythonCode = Tokenize(cobraCode);
+                Form2 outputForm = new Form2();
+                outputForm.SetOutput(ExecuteCobraCode(pythonCode));
+                outputForm.Show();
+                openOutputForms.Add(outputForm);
+            }
+            catch (ArgumentException ex)
+            {
+                MessageBox.Show(ex.Message, "Syntax Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private string Tokenize(string cobraCode)
+        {
+            string txtFunctionDefinition = @"
+def txt(value):
+    return str(value)
+";
+
+            string[] reservedKeywords = { "DECLARE", "alph", "num", "numd", "text", "tof", "say", "txt" };
+
+            string variablePattern = @"DECLARE\s+(num|text|tof|alph|numd)\s+(\w+)\s*=";
+
+            MatchCollection matches = Regex.Matches(cobraCode, variablePattern);
+            foreach (Match match in matches)
+            {
+                string variableName = match.Groups[2].Value;
+                if (Array.Exists(reservedKeywords, keyword => keyword.Equals(variableName, StringComparison.OrdinalIgnoreCase)))
+                {
+                    int lineNumber = GetLineNumber(cobraCode, match.Index);
+                    throw new ArgumentException($"Error: '{variableName}' is a reserved keyword and cannot be used as an identifier (Line {lineNumber}).");
+                }
+            }
+
+            initializeTokens(ref cobraCode);
+
+
+
+            return txtFunctionDefinition + cobraCode;
+        }
+
+        private int GetLineNumber(string text, int charIndex)
+        {
+            int lineNumber = 1;
+            for (int i = 0; i < charIndex; i++)
+            {
+                if (text[i] == '\n')
+                {
+                    lineNumber++;
+                }
+            }
+            return lineNumber;
         }
     }
 
