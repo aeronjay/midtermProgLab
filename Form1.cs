@@ -17,7 +17,7 @@ namespace midtermProgLab
         private Label fileNameLabel;
 
         private Timer debounceTimer;
-        private int debounceInterval = 300; 
+        private int debounceInterval = 300;
 
         public Form1()
         {
@@ -173,7 +173,7 @@ namespace midtermProgLab
 
         private void darkMode_CheckedChanged(object sender, Bunifu.UI.WinForms.BunifuToggleSwitch.CheckedChangedEventArgs e)
         {
-            
+
             MyPictureBox.Invalidate();
         }
 
@@ -206,6 +206,12 @@ namespace midtermProgLab
             cobraCode = Regex.Replace(cobraCode, @"\bstr\(", "txt(");
             cobraCode = Regex.Replace(cobraCode, @"\+(\S)", " + $1");
             cobraCode = Regex.Replace(cobraCode, @"(\S)\+", "$1 + ");
+
+            cobraCode = Regex.Replace(cobraCode, @"\bpag\s*\((.+?)\)\s*:\s*\n", "if ($1):\n");
+            cobraCode = Regex.Replace(cobraCode, @"\bkung\s*\((.+?)\)\s*:\s*\n", "elif ($1):\n");
+            cobraCode = Regex.Replace(cobraCode, @"\bedi\s*:\s*\n", "else:\n");
+
+            cobraCode = Regex.Replace(cobraCode, @"DECLARE\s+(\w+)\s+tas\s+repeat\((\d+)\)\s*:\s*\n", "for $1 in range($2):\n");
         }
 
         private void savefile_Click(object sender, EventArgs e)
@@ -294,7 +300,7 @@ namespace midtermProgLab
             int originalSelectionLength = MyRichTextBox.SelectionLength;
             Color originalColor = MyRichTextBox.SelectionColor;
 
-            foreach (Match match in Regex.Matches(lineText, @"\b(DECLARE|num|text|tof|alph|numd|say|txt)\b"))
+            foreach (Match match in Regex.Matches(lineText, @"\b(DECLARE|num|text|tof|alph|numd|say|txt|pag|kung|edi|repeat)\b"))
             {
                 MyRichTextBox.Select(startIndex + match.Index, match.Length);
                 MyRichTextBox.SelectionColor = GetColorForToken(match.Value);
@@ -320,13 +326,16 @@ namespace midtermProgLab
                     return Color.Green;
                 case "txt":
                     return Color.Yellow;
+                case "pag":
+                case "kung":
+                case "edi":
+                    return Color.Pink;
+                case "repeat":
+                    return Color.Yellow;
                 default:
                     return MyRichTextBox.ForeColor;
             }
         }
-
-        
-
 
         private void lexical_Click(object sender, EventArgs e)
         {
@@ -482,7 +491,7 @@ namespace midtermProgLab
                 if (index != -1)
                 {
                     MyRichTextBox.Select(index, searchText.Length);
-                    MyRichTextBox.SelectionBackColor = Color.Yellow; 
+                    MyRichTextBox.SelectionBackColor = Color.Yellow;
                     startIndex = index + searchText.Length;
                 }
                 else
@@ -510,7 +519,7 @@ namespace midtermProgLab
             {
                 string cobraCode = MyRichTextBox.Text;
                 string tokenized = Tokenize(cobraCode);
-                string interpreted = InterpretCobraCode(cobraCode);
+                //string interpreted = InterpretCobraCode(cobraCode);
                 Form2 outputForm = new Form2();
                 outputForm.SetOutput(ExecuteCobraCode(tokenized));
                 outputForm.Show();
@@ -550,6 +559,7 @@ def txt(value):
 
             return txtFunctionDefinition + cobraCode;
         }
+        
         private string InterpretCobraCode(string code)
         {
             var variables = new Dictionary<string, object>();
